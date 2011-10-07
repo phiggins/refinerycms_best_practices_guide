@@ -65,3 +65,28 @@ And update the relevant `Gemfile` line to read:
     gem 'refinerycms-news', '1.2.0', :path => 'vendor/engines/refinerycms-news-1.2.0'
     
 For convenience, you can rename the folder of the unpacked gem to something short, like 'news', so long as you update the path specified in the Gemfile.
+
+4. How do I do integration tests? When I visit any page it shows the first time startup page because I don't have any superusers.
+
+A. There are a few solutions you can try:
+
+* (Recommended) Override the #show_welcome_page? method in ApplicationController in your tests. For example, if you're using RSpec you can add a file like this:
+
+```
+# in spec/support/disable_refinery_welcome_page.rb
+
+class ApplicationController
+  def show_welcome_page?
+    false
+  end
+end
+```
+
+* Create a superuser in your tests before visiting any pages. This can be as simple as:
+
+```
+u = ::Refinery::User.new email: 'admin@example.com', username: 'admin', password: 'admin'
+u.add_role(:refinery)
+u.add_role(:superuser)
+u.save!
+```
